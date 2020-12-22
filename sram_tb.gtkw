@@ -1,0 +1,8 @@
+[dumpfile] "dump.vcd"
+sram_tb.sram_clk
+sram_tb.sram_ares
+sram_tb.wr_enable
+sram_tb.rd_enable
+sram_tb.ram_index
+sram_tb.sram_data_in
+sram_tb.sram_data_out
