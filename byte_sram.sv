@@ -16,8 +16,7 @@ module byte_sram(
   // internal signals
   logic [7:0] data_read;
 
-  // SRAM indexing for reset
-  // main process
+  // Main Process
   always_ff @(posedge sram_clk or posedge sram_ares) begin
     if(sram_ares) begin
       // Reset the memory no operation is captured under reset
@@ -31,18 +30,18 @@ module byte_sram(
       if(wr_enable & (~rd_enable)) begin
         // Write operation is deploying the index
         memory[ram_index] <= sram_data_in;
-        data_read <= '0;
       end
       else if(rd_enable & (~wr_enable)) begin
         data_read <= memory[ram_index];
       end
       else begin
-        // both the enables signals are set to 0
-        data_read <= '0;
+        // if both enabled are 0 or 1 the stall condition should reset data_read
+        data_read <= 0;
       end
     end
   end
 
   // give the output
-  assign sram_data_out = rd_enable ? data_read : 8'h0;
+  //assign sram_data_out = rd_enable ? data_read : 8'h0;
+  assign sram_data_out = data_read;
 endmodule

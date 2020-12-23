@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# call the clean 
+source clean.sh
 # create the vcd file
 touch dump.vcd
 # iverlog simulation
