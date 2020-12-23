@@ -1,4 +1,7 @@
 // This is the To test bench for the simple SRAM element
+
+`timescale 1ns/1ns
+
 // Main module test
 module sram_tb_top;
   // Important parameter
@@ -17,7 +20,7 @@ module sram_tb_top;
   logic [7:0] read_data;
 
   // test bench knobs
-  bit sva_disable;
+  bit sva_disable = 1; // temp due to race condition
   bit debug;
 
   // Module instance
@@ -26,13 +29,13 @@ module sram_tb_top;
   // Make a reset pulse and specify dump file
   initial begin
      $dumpfile("dump.vcd");
-     $dumpvars(0);
+     $dumpvars();
     // Assert reset
      # 0  sram_ares = 0;
      # 10 sram_ares = 1;
      # 4  sram_ares = 0;
      // End
-     # 500  $finish;
+     # 700 $finish;
   end
 
   // Drive signals
@@ -64,10 +67,13 @@ module sram_tb_top;
     // Start only when we are out of reset
     @(posedge sram_ares);
     @(negedge sram_ares);
-    if(~sva_disable) begin
-      if(rd_enable ^ wr_enable) begin
-        assert (sram_data_out == '0)
-        else $error("SRAM read error in stall condition data is not 0");
+    forever begin
+      @(posedge sram_clk);
+      if(~sva_disable) begin
+        if(~(rd_enable ^ wr_enable)) begin
+          assert (sram_data_out == '0)
+          else $error("SRAM read error in stall condition data is not 0");
+        end
       end
     end
   end

@@ -1,6 +1,6 @@
 // Simple Module Ram with no parameter,
 // the data length is a single byte
-
+`timescale 1ns/1ns
 module byte_sram(
     input logic sram_clk,
     input logic sram_ares,
