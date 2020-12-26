@@ -20,7 +20,7 @@ module sram_tb_top;
   logic [7:0] read_data;
 
   // test bench knobs
-  bit sva_disable = 1; // temp due to race condition
+  bit sva_enable;
   bit debug;
 
   // Module instance
@@ -35,7 +35,7 @@ module sram_tb_top;
      # 10 sram_ares = 1;
      # 4  sram_ares = 0;
      // End
-     # 700 $finish;
+     # 800 $finish;
   end
 
   // Drive signals
@@ -53,6 +53,8 @@ module sram_tb_top;
         $error("Data read from index: %0h is not euqal to expected data: %0h, data is:%0h at time: %0t",i,i,read_data,$time());
       end
     end
+    // Stop simple and standard case testing, start with assertions
+    sva_enable = 1;
     // Create the stall condition
     rd_enable = 0;
     wr_enable = 0;
@@ -60,6 +62,10 @@ module sram_tb_top;
     rd_enable = 1;
     wr_enable = 1;
     repeat(2) @(posedge sram_clk);
+    sva_enable = 0;
+    // reset
+    rd_enable = 0;
+    wr_enable = 0;
   end
 
   // assertion checking
@@ -69,7 +75,7 @@ module sram_tb_top;
     @(negedge sram_ares);
     forever begin
       @(posedge sram_clk);
-      if(~sva_disable) begin
+      if(sva_enable) begin
         if(~(rd_enable ^ wr_enable)) begin
           assert (sram_data_out == '0)
           else $error("SRAM read error in stall condition data is not 0");
